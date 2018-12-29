@@ -5,5 +5,21 @@ set -x
 read oses < ../../operating_systems
 
 for os in $oses; do
-	docker build -t "build:$os" --build-arg=OS=$os .
+	docker build -t "build:$os" - <<_EOF_
+FROM scratch
+COPY --from=jet /jet /jet
+COPY --from=jetware/base_os:$os / /
+
+RUN chown -R jet /jet; \
+    { echo "jet ALL=NOPASSWD: ALL"; echo "Defaults:jet !requiretty"; } > /etc/sudoers.d/99-jet-tmp; \
+	echo "/jet/own/bin/run /jet/own/bin/fasten" | su jet -s /bin/sh; \
+	rm -f /etc/sudoers.d/99-jet-tmp
+
+WORKDIR /jet
+USER jet
+VOLUME ["/jet/prs"]
+ENTRYPOINT ["/jet/login"]
+CMD ["main"]
+_EOF_
+
 done
