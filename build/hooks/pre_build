@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -x
+
+read owner < ../../owner
+read appliance < ../../appliance
+read version < ../../version
+
+docker build -t jet --build-arg=OWNER=$owner --build-arg=APPLIANCE=$appliance --build-arg=VERSION=$version ../fetch

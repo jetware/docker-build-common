@@ -1,0 +1,40 @@
+#!/bin/sh
+
+die() {
+	[ -n "$1" ] && echo ERROR "$1" >&2
+	exit ${2:-1}
+}
+
+[ $# -eq 3 ] || die "Usage: $0 owner appliance version"
+
+OWNER=$1 APPLIANCE=$2 VERSION=$3
+
+: ${JET_ROOT:=/jet}
+: ${DOWNLOAD_URL:="https://jetware.io/appliances/$OWNER/$APPLIANCE-$VERSION/download/installer:nub_tgz"}
+: ${PACKAGER_URL_PREFIX:='http://download.jetware.org/packager/'}
+: ${DESTDIR:=$JET_ROOT}
+: ${JET_USER:=jet}
+
+download() {
+	echo "${1%%*/}" >&2;
+	wget -q -O - "$1";
+}
+
+
+download "$DOWNLOAD_URL" | tar xpzf - -C "$DESTDIR" || exit
+
+while read PACKAGE ROLE NAME VERSION; do
+	[ -e "$DESTDIR/use/$ROLE" ] && continue
+	[ -h "$DESTDIR/use/$ROLE" ] && rm -f "$DESTDIR/use/$ROLE"
+	mkdir "$DESTDIR/use/$ROLE"
+	download "$PACKAGER_URL_PREFIX/$PACKAGE.tgz" | tar xpzf - -C "$DESTDIR/use/$ROLE" || exit
+done < "$DESTDIR/own/packages"
+
+"$DESTDIR"/own/bin/run "$JET_ROOT"/own/bin/config \
+	appliance.author="$OWNER" \
+	appliance.name="$APPLIANCE" \
+	appliance.title="$APPLIANCE" \
+	appliance.version="$VERSION" \
+	appliance.url="https://jetware.io/appliances/$OWNER/$APPLIANCE-$VERSION" \
+	appliance.support_url="https://jetware.io/contacts/submit?contacts_form%5Bsubject%5D=Appliance%3A+${OWNER}%2F${APPLIANCE}-${VERSION}"
+

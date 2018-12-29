@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -x
+
+read oses < ../../operating_systems
+
+for os in $oses; do
+	docker build -t "build:$os" --build-arg=OS=$os .
+done
