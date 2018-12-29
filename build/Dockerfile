@@ -1,8 +1,9 @@
+ARG OS
 FROM scratch
 COPY --from=jet /jet /jet
 
-ARG OS
-COPY --from=jetware/base_os:$OS / /
+FROM jetware/base_os:$OS as base_os
+COPY --from=base_os / /
 
 RUN chown -R jet /jet; \
     { echo "jet ALL=NOPASSWD: ALL"; echo "Defaults:jet !requiretty"; } > /etc/sudoers.d/99-jet-tmp; \
