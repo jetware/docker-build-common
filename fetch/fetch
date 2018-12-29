@@ -21,6 +21,7 @@ download() {
 }
 
 
+mkdir -p "$DESTDIR"
 download "$DOWNLOAD_URL" | tar xpzf - -C "$DESTDIR" || exit
 
 while read PACKAGE ROLE NAME VERSION; do
