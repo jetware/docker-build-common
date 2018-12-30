@@ -10,8 +10,7 @@ FROM scratch
 COPY --from=jet /jet /jet
 COPY --from=jetware/base_os:$os / /
 
-RUN chown -R jet /jet; \
-    { echo "jet ALL=NOPASSWD: ALL"; echo "Defaults:jet !requiretty"; } > /etc/sudoers.d/99-jet-tmp; \
+RUN { echo "jet ALL=NOPASSWD: ALL"; echo "Defaults:jet !requiretty"; } > /etc/sudoers.d/99-jet-tmp; \
 	echo "/jet/own/bin/run /jet/own/bin/fasten" | su jet -s /bin/sh; \
 	rm -f /etc/sudoers.d/99-jet-tmp
 

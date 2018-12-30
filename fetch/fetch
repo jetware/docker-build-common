@@ -39,3 +39,4 @@ done < "$DESTDIR/own/packages"
 	appliance.url="https://jetware.io/appliances/$OWNER/$APPLIANCE-$VERSION" \
 	appliance.support_url="https://jetware.io/contacts/submit?contacts_form%5Bsubject%5D=Appliance%3A+${OWNER}%2F${APPLIANCE}-${VERSION}"
 
+chown -R 999:0 "$DESTDIR"
