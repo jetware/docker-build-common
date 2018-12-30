@@ -1,0 +1,87 @@
+#!/bin/bash
+
+
+# base_name_template  - docker image name template, i.e. pytorch-notebook:python-accel
+# subtag_mapping - format: src_subtag[:role[:dst_subtag]] | src_subtag::dst_subtag
+
+if [ $# -lt 2 ]; then
+	echo "Usage: $0 base_name_template subtag_source ... < packages_list" >&2
+	exit 1
+fi
+
+base_template=$1
+shift
+
+declare -a sources
+declare -A mapping
+declare -A versions
+declare -A dst_subtags
+for mapping in "$@"; do
+	src=${mapping%%:*}
+	sources+=($src)
+	if [[ $mapping = $src ]]; then
+		role=$src
+		dst=$src
+	else
+		tail=${mapping#$src:}
+		role=${tail%:*}
+		dst=${tail#*:}
+	fi
+
+	if [[ -n $role ]]; then
+		# append a pair of role:dst to the list of mapping sources for src subtag
+		mapping[$src]+="$role:$dst "
+	else
+		# add the default value if the role is empty
+		dst_subtags[$src]=$dst
+	fi
+done
+
+while read PACKAGE ROLE NAME VERSION; do
+	for src in "${sources[@]}"; do
+		for pair in ${mapping[$src]}; do
+			role=${pair%:*}
+			if [[ $role = $ROLE ]]; then
+				dst=${pair#*:}
+				dst_subtags[$src]=$dst
+				VERSION=${VERSION%%-jet-*}
+				VERSION=${VERSION//[^a-zA-Z0-9.]/_}
+				versions[$src]=$VERSION
+				unset mapping[$src] # remove the mapping for sources found
+				break
+			fi
+		done
+	done
+done
+
+
+name=${base_template%:*}
+[[ $name = $base_template ]] && tag= || tag=${base_template#*:}
+
+base_name=$name
+
+IFS=-
+declare -a name=($name)
+declare -a tag=($tag)
+unset IFS
+
+declare -a subtags
+for src in "${name[@]}"; do
+	[[ -n ${versions[$src]} ]] && subtags+=(${versions[$src]})
+done
+
+for src in "${tag[@]}"; do
+	[[ -n ${dst_subtags[$src]} ]] || continue
+	subtag=${dst_subtags[$src]}
+
+	if [[ -n ${versions[$src]} ]]; then
+		[[ $subtag =~ [0-9]$ ]] && subtag+=_
+		subtag+=${versions[$src]}
+	fi
+	subtags+=($subtag)
+done
+
+echo -n "$base_name"
+IFS=-
+echo ":${subtags[*]}"
+

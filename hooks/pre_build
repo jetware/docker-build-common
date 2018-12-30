@@ -12,3 +12,5 @@ name=${appliance%-*}
 version=${appliance#*-}
 
 docker build -t jet --build-arg=OWNER=$owner --build-arg=NAME=$name --build-arg=VERSION=$version fetch_context
+
+docker run --rm jet cat /jet/own/packages > ../packages

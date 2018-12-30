@@ -3,7 +3,9 @@
 set -x
 
 read oses < ../operating_systems
-read base_name < ../base_name
+read base_name_template < ../base_name_template
+
+base_name=$(./base_name $base_name_template `cat ../subtag_sources` < ../packages)
 
 for os in $oses; do
 	tags=$(../tags-generator/generate_tag_variants $base_name-$os ../subtags/*)

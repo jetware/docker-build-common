@@ -1,0 +1,11 @@
+#!/bin/sh
+
+expect_eq() {
+	[ "x$1" = "x$2" ] || { echo "failed: $1 = $2" >&2; exit 1; }
+	echo "ok $1 = $2"
+}
+
+expect_eq "$(../base_name memcached memcached < memcached14)" "memcached:1.4.29"
+expect_eq "$(../base_name pytorch-notebook:python-accel pytorch python accel:mkl:cpu_mkl accel:cuda:gpu_cuda accel::cpu < pytorch04_notebook_cpu)" "pytorch-notebook:0.4.0-python3.6.3-cpu"
+expect_eq "$(../base_name pytorch-notebook:python-accel pytorch python accel:mkl:cpu_mkl accel:cuda:gpu_cuda accel::cpu < pytorch1_notebook_mkl)" "pytorch-notebook:1.0.0-python3.6.3-cpu_mkl2018.2.199"
+expect_eq "$(../base_name pytorch-notebook:python-accel pytorch python accel:mkl:cpu_mkl accel:cuda:gpu_cuda accel::cpu < pytorch1_notebook_mkl-1)" "pytorch-notebook:1.0.0-python3_6_3-cpu_mkl2018.2.199"

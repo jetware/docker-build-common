@@ -1,0 +1,35 @@
+acl-2.2.52 acl acl 2.2.52
+attr-2.4.47 attr attr 2.4.47
+ca-certificates-2016.2.7-jet-1 ca-certificates ca-certificates 2016.2.7-jet-1
+config config config
+diskcleaner diskcleaner diskcleaner
+findutils-4.6.0 findutils findutils 4.6.0
+gawk-4.1.3 gawk gawk 4.1.3
+gcc-libgcc_s-4.9.3 libgcc_s gcc-libgcc_s 4.9.3
+gcc-libstdcxx-4.9.3 libstdcxx gcc-libstdcxx 4.9.3
+glibc-2.22 libc glibc 2.22
+glibc-locale-2.22 locale glibc-locale 2.22
+grep-2.24 grep grep 2.24
+host-perl perl host-perl
+host_system_proxy host_system_proxy host_system_proxy
+libevent-2.0.22 libevent libevent 2.0.22
+libffi-3.1 libffi libffi 3.1
+libselinux-2.4 libselinux libselinux 2.4
+libtasn1-4.7 libtasn1 libtasn1 4.7
+linux-appliance-mothership mothership linux-appliance-mothership
+memcached-1.4.29 memcached memcached 1.4.29
+monit-5.19.0-jet-1 monit monit 5.19.0-jet-1
+monit-healthchecker healthchecker monit-healthchecker
+multitask-init-1.4.1-jet-1 init multitask-init 1.4.1-jet-1
+ncurses-6.0 ncurses ncurses 6.0
+nss_libfreebl-3.25 nss_libfreebl nss_libfreebl 3.25
+openssl-1.0.2h openssl openssl 1.0.2h
+origin-nss-3.25 origin-nss origin-nss 3.25
+p11-kit-0.23.2 p11-kit p11-kit 0.23.2
+pcre-8.39 pcre pcre 8.39
+pki-1.0 pki pki 1.0
+readline-6.3 readline readline 6.3
+sed-4.2.2 sed sed 4.2.2
+selfmanagement_preset selfmanagement_preset selfmanagement_preset
+tzdata-2016f tzdata tzdata 2016f
+zlib-1.2.8 zlib zlib 1.2.8
