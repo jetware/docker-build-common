@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Build a Docker image containing a jet pointed by GIT_TAG as ab-$OWNER/$NAME-$VERSION
+
+set -x
+
+appliance=${GIT_BRANCH#ab-}
+
+owner=${appliance%/*}
+appliance=${appliance#*/}
+name=${appliance%-*}
+version=${appliance#*-}
+
+docker build -t jet --build-arg=OWNER=$owner --build-arg=NAME=$name --build-arg=VERSION=$version fetch_context
