@@ -6,7 +6,7 @@ read oses < ../../operating_systems
 read base_tag < ../../base_tag
 
 for os in $oses; do
-	tags=$(generate-tags $base_tag-$os ../../subtags/*)
+	tags=$(../../tags-generator/generate_tag_variants $base_tag-$os ../../subtags/*)
 	for tag in $tags; do
 		docker tag build:$os $DOCKER_REPO:$tag
 		docker push $DOCKER_REPO:$tag
