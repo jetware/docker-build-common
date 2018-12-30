@@ -1,4 +1,4 @@
-FROM alpine
+FROM jetware/base_os:alpine3.8
 
 ARG OWNER
 ARG NAME
