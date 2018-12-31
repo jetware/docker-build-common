@@ -11,7 +11,7 @@ for os in $oses; do
 FROM jet
 RUN rm -rf /etc; rm -rf /bin /lib /sbin /tmp /usr /var
 COPY --from=jetware/base_os:$os / /
-RUN { chmod u+s $setuid_files; chmod g+s $setgid_files; true; } /dev/null 2>&1
+RUN { chmod u+s $setuid_files; chmod g+s $setgid_files; true; } >/dev/null 2>&1
 
 RUN { echo "jet ALL=NOPASSWD: ALL"; echo "Defaults:jet !requiretty"; } > /etc/sudoers.d/99-jet-tmp && \
 	{ echo "/jet/own/bin/run /jet/own/bin/fasten" | su jet -s /bin/sh ;} && \
