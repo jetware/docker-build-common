@@ -11,5 +11,46 @@ appliance=${appliance#*/}
 name=${appliance%-*}
 version=${appliance#*-}
 
-docker build -t jet --build-arg=OWNER=$owner --build-arg=NAME=$name --build-arg=VERSION=$version fetch &&
-	docker run --rm jet cat /jet/own/packages > ../packages
+# Build an image
+docker build -t jet-fetch --build-arg=OWNER=$owner --build-arg=NAME=$name --build-arg=VERSION=$version fetch || exit
+
+# Get packages list
+docker run --rm jet-fetch cat /jet/own/packages > ../packages
+
+if ! [ -e ../disclose ]; then
+	docker run --rm -i jet-fetch sh <<'_EOF_' > ../disclose
+read roles < /jet/own/env/oneclickstack/principal
+for role in $roles; do echo "$role"; done
+read roles < /jet/own/env/oneclickstack/important
+for role in $roles; do echo "$role"; done
+_EOF_
+fi
+
+# Add labels for the packages
+
+disclose=
+[ -r ../disclose ] && while read ROLE; do
+	disclose="$disclose $ROLE"
+done < ../disclose
+
+[ -n "$disclose" -a -r ../packages ] && while read  PACKAGE ROLE NAME VERSION; do
+	case " $disclose " in
+	*\ $ROLE\ *)
+		eval name_$ROLE=\"\$NAME\"
+		eval version_$ROLE=\"\$VERSION\"
+		;;
+	esac
+done < ../packages
+
+{
+	echo "FROM jet-fetch"
+	echo "LABEL maintainer=\"Jetware <dockerhub@jetware.org>\" \\"
+	for ROLE in $disclose; do
+		eval NAME=\"\$name_$ROLE\"
+		[ -n "$NAME" ] || continue
+		eval VERSION=\"\$version_$ROLE\"
+		VERSION=${VERSION%%-jet-*}
+		echo "  org.jetware.pkg.$ROLE=\"$NAME\" \"org.jetware.pkg.$ROLE.version\"=\"$VERSION\" \\"
+	done
+	echo "  org.jetware.appliance.url=\"http://jetware.org/appliances/$owner/$name-$version\" org.jetware.appliance.owner=\"$owner\" org.jetware.appliance.name=\"$name\" org.jetware.appliance.version=\"$version\""
+} | docker build -t jet -
