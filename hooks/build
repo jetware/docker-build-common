@@ -2,11 +2,11 @@
 
 set -x
 
-read oses < ../operating_systems
+read oses < operating_systems
 
 for os in $oses; do
-	read setuid_files < fixes/setuid.$os
-	read setgid_files < fixes/setgid.$os
+	read setuid_files < build-common/fixes/setuid.$os
+	read setgid_files < build-common/fixes/setgid.$os
 	docker build -t "build:$os" - <<_EOF_
 FROM jet
 RUN rm -rf /etc; rm -rf /bin /lib /sbin /tmp /usr /var
