@@ -14,9 +14,10 @@ version=${appliance#*-}
 # Build an image
 docker build -t jet-fetch --build-arg=OWNER=$owner --build-arg=NAME=$name --build-arg=VERSION=$version fetch || exit
 
-# Get packages list
+# Get a packages list
 docker run --rm jet-fetch cat /jet/own/packages > ../packages
 
+# Get a roles list to disclose
 if ! [ -e ../disclose ]; then
 	docker run --rm -i jet-fetch sh <<'_EOF_' > ../disclose
 read roles < /jet/own/env/oneclickstack/principal
@@ -24,15 +25,26 @@ for role in $roles; do echo "$role"; done
 read roles < /jet/own/env/oneclickstack/important
 for role in $roles; do echo "$role"; done
 _EOF_
+	[ -s ../disclose ] || rm ../disclose
+fi
+
+disclose=
+if [ -r ../disclose ]; then
+	while read ROLE; do
+		disclose="$disclose $ROLE"
+	done < ../disclose
+elif [ -r ../base_name_template ]; then
+	read base_name_template < ../base_name_template
+	name=${base_name_template%:*}
+	[ "$name" = "$base_name_template" ] && tag= || tag=${base_name_template#*:}
+	IFS=-
+	for part in $name $tag; do
+		disclose="$disclose $part"
+	done
+	unset IFS
 fi
 
 # Add labels for the packages
-
-disclose=
-[ -r ../disclose ] && while read ROLE; do
-	disclose="$disclose $ROLE"
-done < ../disclose
-
 [ -n "$disclose" -a -r ../packages ] && while read  PACKAGE ROLE NAME VERSION; do
 	case " $disclose " in
 	*\ $ROLE\ *)
