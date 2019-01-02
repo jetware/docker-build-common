@@ -64,5 +64,6 @@ done < packages
 		VERSION=${VERSION%%-jet-*}
 		echo "  org.jetware.pkg.$ROLE=\"$NAME\" \"org.jetware.pkg.$ROLE.version\"=\"$VERSION\" \\"
 	done
-	echo "  org.jetware.appliance.url=\"http://jetware.org/appliances/$owner/$name-$version\" org.jetware.appliance.owner=\"$owner\" org.jetware.appliance.name=\"$name\" org.jetware.appliance.version=\"$version\""
+	echo "  org.jetware.appliance.url=\"http://jetware.org/appliances/$owner/$name-$version\" org.jetware.appliance.owner=\"$owner\" org.jetware.appliance.name=\"$name\" org.jetware.appliance.version=\"$version\" \\"
+	echo "  org.label-schema.schema-version=\"1.0\" org.label-schema.vendor=\"Jetware/$owner\" org.label-schema.name=\"$name\" org.label-schema.version=\"$version\" org.label-schema.url=\"http://jetware.org/appliances/$owner/$name-$version\""
 } | docker build -t jet -
