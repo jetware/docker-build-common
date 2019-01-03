@@ -4,6 +4,7 @@ set -x
 
 read oses < operating_systems
 read base_name_template < base_name_template
+[ -r docker_repo ] && read DOCKER_REPO < docker_repo
 
 base_name=$(build-common/base_name $base_name_template `cat subtag_sources` < packages)
 
