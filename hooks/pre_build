@@ -23,7 +23,7 @@ name=${appliance%-*}
 version=${appliance#*-}
 
 # Build an image
-docker build -t jet-fetch --build-arg=OWNER=$owner --build-arg=NAME=$name --build-arg=VERSION=$version build-common/fetch || exit
+docker build -t jet-fetch --build-arg=http_proxy=$http_proxy --build-arg=OWNER=$owner --build-arg=NAME=$name --build-arg=VERSION=$version build-common/fetch || exit
 
 # Get a packages list
 docker run --rm jet-fetch cat /jet/own/packages > packages
