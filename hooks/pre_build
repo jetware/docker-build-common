@@ -6,6 +6,17 @@ set -x
 
 appliance=${GIT_BRANCH#ab-}
 
+# DOCKER_LOGIN can store arguments for the 'docker login' command, which include a password.
+# Check the variable and do login in a subshell with the debugging off, and unset the variable
+# later to prevent the leakage of a password.
+(
+set +x
+if [ -n "$DOCKER_LOGIN" ]; then
+		docker login $DOCKER_LOGIN
+fi
+) || exit
+unset DOCKER_LOGIN
+
 owner=${appliance%/*}
 appliance=${appliance#*/}
 name=${appliance%-*}
