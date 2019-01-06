@@ -29,7 +29,7 @@ build)
 	appliance=$2 os=$3 user=$4 product=$5
 
 	curl -H "Content-Type: application/json" \
-		--data '{"appliance": "'$appliance'", "publisher": "'$user'", "product": "'"$product"'", "os": "'$os'"}' \
+		--data '{"appliance": "'"$appliance"'", "publisher": "'"$user"'", "product": "'"$product"'", "os": "'"$os"'"}' \
 		-X POST "$REGISTER_ENDPOINT_URL/all/create/DockerHub"
 	;;
 actual)
@@ -37,7 +37,7 @@ actual)
 	appliance=$2 os=$3 user=$4 repo=$5 actual_tag=$6 base_tag=$7
 
 	curl -H "Content-Type: application/json" \
-		--data '{"appliance": "'$appliance'", "user": "'$user'", "repository": "'$repo'", "tag": "'$actual_tag'", "base_tag": "'$base_tag'", "os": "'$os'"}' \
+		--data '{"appliance": "'"$appliance"'", "user": "'"$user"'", "repository": "'"$repo"'", "tag": "'"$actual_tag"'", "base_tag": "'"$base_tag"'", "os": "'"$os"'"}' \
 		-X POST "$REGISTER_ENDPOINT_URL/actual/save/DockerHub"
 	;;
 esac

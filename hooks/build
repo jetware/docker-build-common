@@ -2,9 +2,7 @@
 
 set -x
 
-read oses < operating_systems
-
-for os in $oses; do
+while read os os_title; do
 	read setuid_files < build-common/fixes/setuid.$os
 	read setgid_files < build-common/fixes/setgid.$os
 	docker pull jetware/base_os:$os
@@ -32,4 +30,4 @@ ENTRYPOINT ["/jet/login"]
 CMD ["main"]
 _EOF_
 
-done
+done < operating_systems

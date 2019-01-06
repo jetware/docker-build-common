@@ -2,7 +2,6 @@
 
 set -x
 
-read oses < operating_systems
 read base_name_template < base_name_template
 [ -r docker_repo ] && read DOCKER_REPO < docker_repo
 
@@ -14,7 +13,7 @@ appliance=${GIT_BRANCH#ab-}
 user=${DOCKER_REPO%/*}
 repository=${DOCKER_REPO#*/}
 
-for os in $oses; do
+while read os os_title; do
 	tags=$(tags-generator/generate_tag_variants $base_name-$os subtags/*)
 	[ -n "$tags" ] || { echo "No tags" >&2; exit 1; }
 	for tag in $tags; do
@@ -23,10 +22,10 @@ for os in $oses; do
 
 	repodigest=$(docker image inspect --format  '{{(index .RepoDigests 0)}}' build:$os)
 	hash=${repodigest#*@}
-	build-common/register build "$appliance" "$os" "$user" "${repository}@${hash}"
+	build-common/register build "$appliance" "$os_title" "$user" "${repository}@${hash}"
 
 	actual_tag=$(tags-generator/shortest_tag_variant $base_name-$os subtags/*)
 	if [ -n "$actual_tag" ]; then
-		build-common/register actual "$appliance" "$os" "$user" "$repository" "$actual_tag" "${base_name#*:}-$os"
+		build-common/register actual "$appliance" "$os_title" "$user" "$repository" "$actual_tag" "${base_name#*:}-$os"
 	fi
-done
+done < operating_systems
