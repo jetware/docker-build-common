@@ -1,0 +1,43 @@
+#!/bin/sh
+
+usage() {
+	echo -n "\
+Usage: $0 all|actual ...
+
+To register a newly built container:
+
+	$0 build appliance os dockerhub_user dockerhub_repo:tag|@hash
+
+To registar an actual version of a container:
+
+	$0 actual appliance os dockerhub_user dockerhub_repo actual_tag base_tag
+
+Environment:
+
+REGISTER_ENDPOINT_URL
+" >&2
+	exit 1
+}
+
+[ $# -gt 1 ] || usage
+
+[ -n "$REGISTER_ENDPOINT_URL" ] || { echo "REGISTER_ENDPOINT_URL is not set, exiting" >&2; exit 0; }
+
+case $1 in
+build)
+	[ $# -eq 5 ] || usage
+	appliance=$2 os=$3 user=$4 product=$5
+
+	curl -H "Content-Type: application/json" \
+		--data '{"appliance": "'$appliance'", "publisher": "'$user'", "product": "'"$product"'", "os": "'$os'"}' \
+		-X POST "$REGISTER_ENDPOINT_URL/all/create/DockerHub"
+	;;
+actual)
+	[ $# -eq 7 ] || usage
+	appliance=$2 os=$3 user=$4 repo=$5 actual_tag=$6 base_tag=$7
+
+	curl -H "Content-Type: application/json" \
+		--data '{"appliance": "'$appliance'", "user": "'$user'", "repository": "'$repo'", "tag": "'$actual_tag'", "base_tag": "'$base_tag'", "os": "'$os'"}' \
+		-X POST "$REGISTER_ENDPOINT_URL/actual/save/DockerHub"
+	;;
+esac

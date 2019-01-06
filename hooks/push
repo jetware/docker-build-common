@@ -10,10 +10,23 @@ base_name=$(build-common/base_name $base_name_template `cat subtag_sources` < pa
 
 [ -n "$base_name" ] || { echo "No base_name" >&2; exit 1; }
 
+appliance=${GIT_BRANCH#ab-}
+user=${DOCKER_REPO%/*}
+repository=${DOCKER_REPO#*/}
+
 for os in $oses; do
 	tags=$(tags-generator/generate_tag_variants $base_name-$os subtags/*)
 	[ -n "$tags" ] || { echo "No tags" >&2; exit 1; }
 	for tag in $tags; do
 		docker tag build:$os $DOCKER_REPO:$tag && docker push $DOCKER_REPO:$tag || exit
 	done
+
+	repodigest=$(docker image inspect --format  '{{(index .RepoDigests 0)}}' build:$os)
+	hash=${repodigest#*@}
+	build-common/register build "$appliance" "$os" "$user" "${repository}@${hash}"
+
+	actual_tag=$(tags-generator/shortest_tag_variant $base_name-$os subtags/*)
+	if [ -n "$actual_tag" ]; then
+		build-common/register actual "$appliance" "$os" "$user" "$repository" "$actual_tag" "${base_name#*:}-$os"
+	fi
 done
