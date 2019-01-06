@@ -2,6 +2,8 @@
 
 set -x
 
+[ "$SOURCE_BRANCH" = "ab-readme" ] && exit 0
+
 read base_name_template < base_name_template
 [ -r docker_repo ] && read DOCKER_REPO < docker_repo
 
@@ -9,7 +11,7 @@ base_name=$(build-common/base_name $base_name_template `cat subtag_sources` < pa
 
 [ -n "$base_name" ] || { echo "No base_name" >&2; exit 1; }
 
-appliance=${GIT_BRANCH#ab-}
+appliance=${SOURCE_BRANCH#ab-}
 user=${DOCKER_REPO%/*}
 repository=${DOCKER_REPO#*/}
 

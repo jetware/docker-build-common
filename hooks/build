@@ -2,6 +2,8 @@
 
 set -x
 
+[ "$SOURCE_BRANCH" = "ab-readme" ] && exit 0
+
 while read os os_title; do
 	read setuid_files < build-common/fixes/setuid.$os
 	read setgid_files < build-common/fixes/setgid.$os
