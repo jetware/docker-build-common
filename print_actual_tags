@@ -1,0 +1,31 @@
+#!/bin/bash
+
+usage() {
+	echo -n "\
+Usage: $0 docker_user docker_repo
+
+Environment:
+
+REGISTER_ENDPOINT_URL
+" >&2
+	exit 1
+}
+
+[ $# -ne 2 -o "x$1" = "x-h" ] && usage
+user=$1 repository=$2
+
+[ -n "$REGISTER_ENDPOINT_URL" ] || { echo "REGISTER_ENDPOINT_URL is not set, exiting" >&2; exit 0; }
+
+while IFS=$'\t' read appliance user repo actual_tag base_tag os software updated _; do
+	printf "%s" "\
+#### \`$actual_tag\`
+
+* Full tag alias: \`$base_tag\`
+* Software: $software on $os
+* Jetware appliance: [$appliance](https://jetware.io/appliances/$appliance?us=dockerhub)
+
+"
+done <<_EOF_
+$(curl "$REGISTER_ENDPOINT_URL/actual/index/DockerHub.txt?choice=1&user=$user&repository=$repository" 2>/dev/null)
+_EOF_
+
