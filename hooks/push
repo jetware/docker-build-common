@@ -29,3 +29,21 @@ while read os os_title; do
 		build-common/register actual "$appliance" "$os_title" "$user" "$repository" "$actual_tag" "${base_name#*:}-$os"
 	fi
 done < operating_systems
+
+
+# rewrite README file
+
+if [ -e README.md -a ! -e README.md.src ]; then
+	mv README.md README.md.src
+fi
+
+[ -e README.md.src ] && while IFS= read line; do
+	case "$line" in
+	@actual_tags@)
+		build-common/print_actual_tags "$user" "$repository"
+		;;
+	*)
+		printf "%s\n" "$line"
+	esac
+done < README.md.src > README.md
+
